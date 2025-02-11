@@ -1,35 +1,36 @@
-# Pipeline to automatically mirror
-# an Azure DevOps repository in a private GitHub repository
-
-# Trigger on all branches
 trigger:
-- '*'
+- '*'  # Trigger on all branches
 
-# Use latest Ubuntu image
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'ubuntu-latest'  # Use the latest Ubuntu image
 
-# Pipeline
 steps:
-- checkout: none
-- script: |
-      
-      # Install urlencode function to encode reserved characters in passwords
-      sudo apt-get install gridsite-clients
+- checkout: none  # Do not check out the Azure DevOps repository
 
-      # Create local mirror of Azure DevOps repository
-      git clone --mirror https://${AZURE_GIT_USERNAME}:$(urlencode ${AZURE_GIT_PASSWORD})@${AZURE_REPO_URL} repo-mirror
-      
-      # Sync GitHub repository
-      cd repo-mirror
-      
-      git push --mirror "https://${GITHUB_USERNAME}:$(urlencode ${GITHUB_TOKEN})@github.com/${GITHUB_USERNAME}/${GITHUB_REPO}.git"
-      
-  displayName: 'Sync repository with GitHub'
+- script: |
+    set -x  # Enable debugging
+
+    # Install git and python3 for URL encoding
+    sudo apt-get update
+    sudo apt-get install -y git python3
+
+    # URL encode function using python
+    urlencode() {
+      python3 -c "import urllib.parse; print(urllib.parse.quote('''$1'''))"
+    }
+
+    # Clone the GitHub repository
+    git clone --mirror https://$(urlencode ${GITHUB_TOKEN})@${GITHUB_REPO_URL} github-mirror
+
+    # Change directory to the cloned repository
+    cd github-mirror
+
+    # Push the repository to Azure DevOps
+    git push --mirror https://$(urlencode ${AZURE_PAT})@${AZURE_REPO_URL}
+
+  displayName: 'Mirror GitHub repository to Azure DevOps'
   env:
-    AZURE_REPO_URL: $(AZURE_REPO_URL)
-    AZURE_GIT_USERNAME: $(AZURE_GIT_USERNAME)
-    AZURE_GIT_PASSWORD: $(AZURE_GIT_PASSWORD)
-    GITHUB_USERNAME: $(GITHUB_USERNAME)
-    GITHUB_TOKEN: $(GITHUB_TOKEN)
-    GITHUB_REPO: $(GITHUB_REPO)
+    GITHUB_REPO_URL: $(GITHUB_REPO_URL)  # GitHub repository URL
+    GITHUB_TOKEN: $(GITHUB_TOKEN)       # GitHub PAT
+    AZURE_REPO_URL: $(AZURE_REPO_URL)   # Azure DevOps repository URL
+    AZURE_PAT: $(AZURE_PAT)             # Azure DevOps PAT
