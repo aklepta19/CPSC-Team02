@@ -3,7 +3,7 @@ CREATE TABLE CATALOG (
 	CATALOG_ID		-- Unique identifier for the catalog
 		INT
 		PRIMARY KEY
-		IDENTITY(1,1),
+		AUTO_INCREMENT,
 	CATALOG_NAME		-- Name of the catalog (Etsy, Amazon, etc.)
 		NVARCHAR(32)
 		NOT NULL
@@ -19,7 +19,7 @@ CREATE TABLE COMPANY (
 	COMPANY_ID		-- Unique identifier for the company
 		INT
 		PRIMARY KEY
-		IDENTITY(1,1),
+		AUTO_INCREMENT,
 	COMPANY_NAME		-- Name of the company
 		NVARCHAR(64)
 		NOT NULL
@@ -28,8 +28,9 @@ CREATE TABLE COMPANY (
 		NVARCHAR(512),
 	CATALOG_ID		-- ID of the catalog the company displays to the drivers
 		INT
-		FOREIGN KEY REFERENCES CATALOG(CATALOG_ID)
 		NOT NULL,
+	FOREIGN KEY (CATALOG_ID)
+        REFERENCES CATALOG(CATALOG_ID),
 	CATALOG_ITEMS		-- JSON string containing specific items displayed for the catalog
 		NVARCHAR(4096)
 		NOT NULL

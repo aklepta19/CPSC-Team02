@@ -3,11 +3,12 @@ CREATE TABLE DISCOUNT (
 	DISCOUNT_ID	-- Unique identifier for the discount
 		INT
 		PRIMARY KEY
-		IDENTITY(1,1),
+		AUTO_INCREMENT,
 	USER_ID		-- ID of the driver the discount is granted to
 		INT
-		FOREIGN KEY REFERENCES DRIVER_USER(USER_ID)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (USER_ID)
+		REFERENCES DRIVER_USER(USER_ID),
 	DISCOUNT_IS_PERCENT	-- Boolean about whether the value is a percent
 		INT
 		NOT NULL,
@@ -25,20 +26,24 @@ CREATE TABLE DISCOUNT (
 CREATE TABLE PURCHASE_HISTORY (
 	HST_ID		-- ID that matches to an entry in the history table
 		INT
-		PRIMARY KEY
-		FOREIGN KEY REFERENFES HISTORY(HST_ID),
-	PCH_HST_CATALOG	-- The catalog the purchase was made from
+		PRIMARY KEY,
+	FOREIGN KEY (HST_ID)
+		REFERENCES HISTORY(HST_ID),
+	CATALOG_ID	-- The catalog the purchase was made from
 		INT
-		FOREIGN KEY REFERENCES CATALOG(CATALOG_ID)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (CATALOG_ID)
+		REFERENCES CATALOG(CATALOG_ID),
 	PCH_HST_ITEM	-- The item that was purchased, must be in the JSON data of the sponsor's item list
 		NVARCHAR(32)
 		NOT NULL,
 	DISCOUNT_ID	-- ID of the discount used on the item
-		INT
-		FOREIGN KEY REFERENCES DISCOUNT(DISCOUNT_ID)
+		INT,
+	FOREIGN KEY (DISCOUNT_ID)
+		REFERENCES DISCOUNT(DISCOUNT_ID),
 	USER_ID		-- ID of the driver that made the purchase
 		INT
-		FOREIGN KEY REFERENCES DRIVER_USER(USER_ID)
-		NOT NULL
+        NOT NULL,
+	FOREIGN KEY (USER_ID)
+		REFERENCES DRIVER_USER(USER_ID)
 	);

@@ -6,15 +6,16 @@ CREATE TABLE TASK (
 	TASK_NAME	-- Name/desc of the task
 		NVARCHAR(512)
 		NOT NULL,
-		UNIQUE,
 	ASSIGNER_ID	-- ID of the sponsor who assigned the task
 		INT
-		FOREIGN KEY REFERENCES SPONSOR_USER(USER_ID)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (ASSIGNER_ID)
+		REFERENCES SPONSOR_USER(USER_ID),
 	ASSIGNEE_ID	-- ID of the driver who is assigned the task
 		INT
-		FORIENG KEY REFERENCES DRIVER_USER(USER_ID)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (ASSIGNEE_ID)
+		REFERENCES DRIVER_USER(USER_ID),
 	PRIMARY KEY (TASK_NUM, ASIGNEE_ID),	-- Ensures that a driver can only be assigned a given task once
 	TASK_POINT_VALUE
 		INT
@@ -34,16 +35,19 @@ CREATE TABLE TASK (
 CREATE TABLE TASK_EXTENSION_REQUEST (
 	REQ_ID	-- ID that matches an entry in the request table
 		INT
-		PRIMARY KEY
-		FOREIGN KEY REFERENCES REQUEST(REQ_ID),
+		PRIMARY KEY,
+	FOREIGN KEY (REQ_ID)
+		REFERENCES REQUEST(REQ_ID),
 	TASK_ID	-- ID that matches the task being extended
 		INT
-		FOREIGN KEY REFERENCES TASK(TASK_NUM)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (TASK_ID)
+		REFERENCES TASK(TASK_NUM),
 	USER_ID	-- ID that matches the user requesting the extension
 		INT
-		FOREIGN KEY REFERENCES DRIVER_USER(USER_ID)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (USER_ID)
+		REFERENCES DRIVER_USER(USER_ID),
 	EREQ_NEW_DEADLINE	-- The task's requested new deadline
 		DATETIME
 		NOT NULL

@@ -3,14 +3,15 @@ CREATE TABLE REQUEST (
 	REQ_ID		-- Unique identifier for each request
 		INT
 		PRIMARY KEY
-		IDENTITY(1,1),
+		AUTO_INCREMENT,
 	REQ_DATE	-- Date and time that the request was made
 		DATETIME
 		NOT NULL,
 	USER_ID		-- Driver that made the request
 		INT
-		FOREIGN KEY REFERENCES DRIVER_USER(USER_ID)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (USER_ID)
+		REFERENCES DRIVER_USER(USER_ID),
 	REQ_IS_RESOLVED	-- Boolean representing whether the request is still standing or is resolved
 		INT
 		NOT NULL
@@ -24,12 +25,14 @@ CREATE TABLE REQUEST (
 CREATE TABLE REVIEW (
 	SPONSOR_ID	-- The ID of the sponsor being reviewed
 		INT
-		FOREIGN KEY REFERENCES SPONSOR_USER(USER_ID)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (SPONSOR_ID)
+		REFERENCES SPONSOR_USER(USER_ID),
 	DRIVER_ID	-- The ID of the driver posting the review
 		INT
-		FOREIGN KEY REFERENCES DRIVER_USER(USER_ID)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (DRIVER_ID)
+		REFERENCES DRIVER_USER(USER_ID),
 	PRIMARY KEY (SPONSOR_ID, DRIVER_ID),	-- Forces a single review of each sponsor per driver
 	REVIEW_DATE	-- Date and time of the review being posted
 		DATETIME

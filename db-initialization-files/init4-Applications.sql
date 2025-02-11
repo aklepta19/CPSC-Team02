@@ -3,10 +3,11 @@ CREATE TABLE APPLICATION_QUESTION (
 	APPQ_ID		-- Unique identifier for each question
 		INT
 		PRIMARY KEY
-		IDENTITY(1,1),
+		AUTO_INCREMENT,
 	COMPANY_ID	-- ID of the company this question is for, if null then it's a default question
-		INT
-		FOREIGN KEY REFERENCES COMPANY(COMPANY_ID),
+		INT,
+	FOREIGN KEY (COMPANY_ID)
+		REFERENCES COMPANY(COMPANY_ID),
 	APPQ_TEXT	-- The question itself
 		NVARCHAR(512)
 		NOT NULL,
@@ -19,15 +20,17 @@ CREATE TABLE DRIVER_APPLICATION (
 	DAPP_ID		-- The ID of the driver's application
 		INT
 		PRIMARY KEY
-		IDENTITY(1,1),
+		AUTO_INCREMENT,
 	COMPANY_ID	-- The ID of the company being applied to
 		INT
-		FOREIGN KEY REFERENCES COMPANY(COMPANY_ID)
 		NOT NULL,
+	FOREIGN KEY (COMPANY_ID)
+		REFERENCES COMPANY(COMPANY_ID),
 	USER_ID		-- The ID of the driver submitting the application
 		INT
-		FOREIGN KEY REFERNECES DRIVER_USER(USER_ID)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (USER_ID)
+		REFERENCES DRIVER_USER(USER_ID),
 	DAPP_CONTENT	-- A JSON string mapping the IDs fro the APPLICATION_QUESTION table to the answers provided
 		NVARCHAR(4096)
 		NOT NULL

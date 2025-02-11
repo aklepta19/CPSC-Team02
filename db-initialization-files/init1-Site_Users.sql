@@ -10,7 +10,7 @@ CREATE TABLE GEN_USER (
 	USER_ID			-- Unique identifier for the user
 		INT
 		PRIMARY KEY
-		IDENTITY(1,1)
+		AUTO_INCREMENT,
 	USER_FNAME		-- User's first and last names, used for
 		NVARCHAR(32)	--  personalized notifications and pages
 		NOT NULL,
@@ -33,8 +33,9 @@ CREATE TABLE GEN_USER (
 		UNIQUE,
 	USER_TYPE		-- Admin, Sponsor, or Driver
 		NVARCHAR(32)
-		NOT NULL
-		FOREIGN KEY REFERENCES USER_TYPES(TYPE_NAME),
+		NOT NULL,
+	FOREIGN KEY (USER_TYPE)
+		REFERENCES USER_TYPES(TYPE_NAME),
 	USER_CREATION_DATE	-- Date and time of account creation
 		DATETIME
 		NOT NULL
@@ -45,34 +46,42 @@ CREATE TABLE GEN_USER (
 CREATE TABLE ADMIN_USER (
 	USER_ID		-- Unique ID, identifies this user in the general table.
 		INT	--  Probably we'll need more info later but I couldn't think of anything for here
-		PRIMARY KEY
-		FORIEGN KEY REFERENCES GEN_USER(USER_ID),
+		PRIMARY KEY,
+	FOREIGN KEY (USER_ID)
+		REFERENCES GEN_USER(USER_ID)
 	);
 
 CREATE TABLE SPONSOR_USER (
 	USER_ID		-- Unique ID, identifies this user in the general table.
 		INT
-		PRIMARY KEY
-		FOREIGN KEY REFERENCES GEN_USER(USER_ID),
+		PRIMARY KEY,
+	FOREIGN KEY (USER_ID)
+		REFERENCES GEN_USER(USER_ID),
 	COMPANY_ID	-- ID of the company this sponsor user represents
 		INT
-		FOREIGN KEY REFERENCES COMPANY(COMPANY_ID)
-		NOT NULL
+        NOT NULL,
+	FOREIGN KEY (COMPANY_ID)
+		REFERENCES COMPANY(COMPANY_ID)
 	);
 
 CREATE TABLE DRIVER_USER (
 	USER_ID		-- Unique ID, identified this user in the general table
 		INT
-		PRIMARY KEY
-		FOREIGN KEY REFERENCES GEN_USER(USER_ID),
+		PRIMARY KEY,
+	FOREIGN KEY (USER_ID)
+		REFERENCES GEN_USER(USER_ID),
 	COMPANY_ID	-- ID of the company this driver is a member of
 		INT
-		FOREIGN KEY REFERENCES COMPANY(COMPANY_ID)
-		NOT NULL,
+        NOT NULL,
+	FOREIGN KEY (COMPANY_ID)
+		REFERENCES COMPANY(COMPANY_ID),
 	DRIVER_LICENSE_VALID	-- A boolean representing whether a driver's lisence is valid, defaults to true
 		INT
 		NOT NULL
 		DEFAULT 1,
+	CONSTRAINT VALID_CHECK CHECK (	-- Ensures that the validity flag is either true or false
+		(DRIVER_LICENSE_VALID) IN (1, 0)
+		),
 	DRIVER_DOB		-- Driver's date of birth (the time part doesn't matter)
 		DATETIME
 		NOT NULL,
@@ -80,9 +89,6 @@ CREATE TABLE DRIVER_USER (
 		INT
 		NOT NULL
 		DEFAULT 0
-	CONSTRAINT VALID_CHECK CHECK (	-- Ensures that the validity flag is either true or false
-		DRIVER_LICENSE_VALID IN (1, 0)
-		)
 	);
 
 
@@ -122,7 +128,7 @@ CREATE VIEW DRIVER AS SELECT
 	GEN_USER.USER_PSWD_HASH,
 	GEN_USER.USER_EMAIL,
 	GEN_USER.USER_PHONE,
-	GEN_USER.USER_CREATION_DATE
+	GEN_USER.USER_CREATION_DATE,
 	DRIVER_USER.COMPANY_ID,
 	DRIVER_USER.DRIVER_LICENSE_VALID,
 	DRIVER_USER.DRIVER_DOB,
